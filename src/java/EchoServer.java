@@ -53,6 +53,8 @@ public class EchoServer
         switch(protocol[0]) { 
                             
             case "0":   //start - oczekiwanie
+                
+                //przypisanie nowemu graczowi ID i pozycji
                 int newX = xPosGen.nextInt(800);
                 int newY = yPosGen.nextInt(600);  
                 System.out.println("player got ID: " + playersID);
@@ -60,6 +62,7 @@ public class EchoServer
                 session.getUserProperties().put("xPos", newX); //zapisuje polozenie gracza
                 session.getUserProperties().put("yPos", newY); //zapisuje polozenie gracza    
                     
+                // wysłanie powyższego info do gracza
                 session.getAsyncRemote().sendText(
                     makeUserResponse(
                         Protocol.START.header,
@@ -83,8 +86,8 @@ public class EchoServer
                 break;  
                 
             case "1":
-                players.get(Integer.parseInt(protocol[1])).getUserProperties().replace("xPos", protocol[2]);
-                players.get(Integer.parseInt(protocol[1])).getUserProperties().replace("yPos", protocol[3]);
+                //players.get(Integer.parseInt(protocol[1])).getUserProperties().replace("xPos", protocol[2]);
+                //players.get(Integer.parseInt(protocol[1])).getUserProperties().replace("yPos", protocol[3]);
                 
                 for (int i = 0; i < players.size(); i++)
                 {
