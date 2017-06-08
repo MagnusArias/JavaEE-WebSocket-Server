@@ -7,7 +7,6 @@ import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
-import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
  
 @ServerEndpoint("/echo") 
@@ -31,12 +30,6 @@ public class EchoServer {
     public void onMessage(String message, Session session) {
         handle(message, session);
 
-        /*
-        if(message.equals("jasiek")) {
-            message = "kotek";
-            SessionHandler.sendToAllConnectedSessionsInRoom(room, message);
-        }
-*/
     }
     private static Random xPosGen = new Random();
     private static Random yPosGen = new Random();
@@ -48,9 +41,7 @@ public class EchoServer {
             [0] = MainProtocol
             [1] = player
             [2] = player.x
-            [3] = player.y
-            [4] = player.rot
-             
+            [3] = player.y             
         */    
         
         switch(protocol[0]) { 
@@ -62,17 +53,13 @@ public class EchoServer {
                     session.getUserProperties().put("playerID", playersID); //zapisuje polozenie  gracza
                     session.getUserProperties().put("xPos", newX); //zapisuje polozenie gracza
                     session.getUserProperties().put("yPos", newY); //zapisuje polozenie gracza
-                    session.getUserProperties().put("rot", 0); //zapisuje polozenie gracza
                     
-                    //System.out.println("Response for player " + playersID + ": " + makeUserResponse(Protocol.START.header, playersID.toString(), newX.toString(), newY.toString(), 0));
-                    //informuje klienta ktorym jest graczem
                     session.getAsyncRemote().sendText(
                                 makeUserResponse(
                                             Protocol.START.header, 
                                             playersID + "", 
-                                            newX+"", 
-                                            newY+"", 
-                                            0+""));
+                                            newX + "", 
+                                            newY + ""));
                     
                     players.add(session); 
                     playersID += 1; 
@@ -89,21 +76,13 @@ public class EchoServer {
                
                players.get(Integer.parseInt(protocol[1])).getUserProperties().replace("xPos", protocol[2]);
                players.get(Integer.parseInt(protocol[1])).getUserProperties().replace("yPos", protocol[3]);
-               players.get(Integer.parseInt(protocol[1])).getUserProperties().replace("rot", protocol[4]);
-              /* System.out.println("Got it from user: " + makeUserResponse(   Protocol.GAME.header, 
-                                                players.get(Integer.parseInt(protocol[1])).getUserProperties().get("playerID").toString(),
-                                                players.get(Integer.parseInt(protocol[1])).getUserProperties().get("xPos").toString(),
-                                                players.get(Integer.parseInt(protocol[1])).getUserProperties().get("yPos").toString(),
-                                                players.get(Integer.parseInt(protocol[1])).getUserProperties().get("rot").toString()
-                            ));*/
                
                for (int i = 0; i < players.size(); i++){
                     players.get(i).getAsyncRemote().sendText(
                             makeUserResponse(   Protocol.GAME.header, 
                                                 players.get(i).getUserProperties().get("playerID").toString(),
                                                 players.get(i).getUserProperties().get("xPos").toString(),
-                                                players.get(i).getUserProperties().get("yPos").toString(),
-                                                players.get(i).getUserProperties().get("rot").toString()
+                                                players.get(i).getUserProperties().get("yPos").toString()
                             ) 
                     ); 
                } 
@@ -119,8 +98,8 @@ public class EchoServer {
         //System.out.println("Session " + session.getId() + " has ended");
     }
     
-    private String makeUserResponse(String proto, String ID, String xpos, String ypos, String rotation){
-        return proto + ":" + ID + ":" + xpos + ":" + ypos + ":" + rotation;
+    private String makeUserResponse(String proto, String ID, String xpos, String ypos){
+        return proto + ":" + ID + ":" + xpos + ":" + ypos;
     }
 }
 
