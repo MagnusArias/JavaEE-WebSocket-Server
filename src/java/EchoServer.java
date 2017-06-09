@@ -41,7 +41,7 @@ public class EchoServer
    
     private void handle(String csv, Session session) 
     {
-        String[] protocol = csv.split(":"); 
+        String[] protocol = csv.split(";"); 
         
         /* protocol:
             [0] = MainProtocol
@@ -60,7 +60,6 @@ public class EchoServer
                 session.getUserProperties().put("playerID", playersID); //zapisuje polozenie  gracza
                 session.getUserProperties().put("xPos", newX); //zapisuje polozenie gracza
                 session.getUserProperties().put("yPos", newY); //zapisuje polozenie gracza 
-                session.getUserProperties().put("rot", newY); //zapisuje polozenie gracza 
                     
                 // wysłanie powyższego info do gracza
                 session.getAsyncRemote().sendText(
@@ -68,8 +67,7 @@ public class EchoServer
                         Protocol.START.header,
                         playersID + "",
                         newX + "",
-                        newY + "",
-                        0 + ""
+                        newY + ""
                     )
                 );
                
@@ -84,12 +82,11 @@ public class EchoServer
                         players.get(i).getAsyncRemote().sendText(Protocol.GAME.header);
                     }
                 }
-                break;  
+                break;
                 
-            case "1":
+            case "1":  
                 players.get(Integer.parseInt(protocol[1])).getUserProperties().put("xPos", protocol[2]);
                 players.get(Integer.parseInt(protocol[1])).getUserProperties().put("yPos", protocol[3]);
-                players.get(Integer.parseInt(protocol[1])).getUserProperties().put("rot", protocol[4]);
                
                 for (int i = 0; i < players.size(); i++)
                 { 
@@ -98,8 +95,7 @@ public class EchoServer
                             Protocol.GAME.header,
                             players.get(i).getUserProperties().get("playerID").toString(),
                             players.get(i).getUserProperties().get("xPos").toString(),
-                            players.get(i).getUserProperties().get("yPos").toString(),
-                            players.get(i).getUserProperties().get("rot").toString()
+                            players.get(i).getUserProperties().get("yPos").toString()
                         )
                     );
                     
@@ -107,8 +103,7 @@ public class EchoServer
                             Protocol.GAME.header,
                             players.get(i).getUserProperties().get("playerID").toString(),
                             players.get(i).getUserProperties().get("xPos").toString(),
-                            players.get(i).getUserProperties().get("yPos").toString(),
-                            players.get(i).getUserProperties().get("rot").toString()
+                            players.get(i).getUserProperties().get("yPos").toString()
                         ));
                 } 
                 break;
@@ -116,7 +111,7 @@ public class EchoServer
     }
 
     @OnClose
-    public void onClose(Session session)
+    public void onClose(Session session) 
     { 
         for (int i = 0; i < players.size(); i++)
         {
@@ -125,9 +120,9 @@ public class EchoServer
         SessionHandler.removeSession(session);
     }
     
-    private String makeUserResponse(String proto, String ID, String xpos, String ypos, String rot)
+    private String makeUserResponse(String proto, String ID, String xpos, String ypos)
     {
-        return proto + ":" + ID + ":" + xpos + ":" + ypos + ":" + rot;
+        return proto + ";" + ID + ";" + xpos + ";" + ypos;
     }
 }
 
